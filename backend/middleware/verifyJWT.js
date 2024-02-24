@@ -12,6 +12,10 @@ const verifyJWT = (req, res, next) => {
             if (err) return res.sendStatus(403);
             req.user = decoded.UserInfo.username;
             req.roles = decoded.UserInfo.roles;
+            req.fname = decoded.UserInfo.fname;
+            req.lname = decoded.UserInfo.lname;
+            req.email = decoded.UserInfo.email;
+            req.vacationLeaves = decoded.UserInfo.vacationLeaves;
             next();
         }
     );

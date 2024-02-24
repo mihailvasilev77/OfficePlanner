@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-
 import axios from '../api/axios';
+
 const LOGIN_URL = '/auth';
 
 const Login = () => {
@@ -17,7 +17,14 @@ const Login = () => {
 
     const [user, setUser] = useState('');
     const [pwd, setPwd] = useState('');
+    const [fname, setFName] = useState('');
+    const [lname, setLName] = useState('');
+    const [email, setEmail] = useState('');
     const [errMsg, setErrMsg] = useState('');
+
+    useEffect(() => {
+        document.title = "Login page"
+     }, []);
 
     useEffect(() => {
         userRef.current.focus();
@@ -25,14 +32,14 @@ const Login = () => {
 
     useEffect(() => {
         setErrMsg('');
-    }, [user, pwd])
+    }, [user, fname, lname, email, pwd])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
             const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ user, pwd }),
+                JSON.stringify({ user, fname, lname, email, pwd }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
@@ -41,9 +48,12 @@ const Login = () => {
             console.log(JSON.stringify(response?.data));
             const accessToken = response?.data?.accessToken;
             const roles = response?.data?.roles;
-            setAuth({ user, pwd, roles, accessToken });
+            setAuth({ user, pwd, fname, lname, email, roles, accessToken });
             setUser('');
             setPwd('');
+            setLName('');
+            setFName('');
+            setEmail('');
             navigate(from, { replace: true });
         } catch (err) {
             if (!err?.response) {

@@ -6,6 +6,18 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    fname: {
+        type: String,
+        required: true
+    },
+    lname: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
     roles: {
         User: {
             type: Number,
@@ -18,7 +30,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    refreshToken: String
+    refreshToken: String,
+    vacationLeaves: {
+        type: Number,
+        default:20
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
