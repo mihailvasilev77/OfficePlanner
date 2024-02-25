@@ -54,6 +54,10 @@ const Edit = () => {
                 withCredentials: true,
               });
             console.log(JSON.stringify(deleteResponse?.data));
+            setUser('');
+            setStartDate('');
+            setEndDate('');
+            setStatus('Pending');
           }
     } catch (err) {
         if (!err?.response) {

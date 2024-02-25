@@ -1,4 +1,33 @@
 const Pending = require('../model/Pending');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  secure: false,
+  auth: {
+    user: 'ification.sender@gmail.com',
+    pass: 'gczf cmaw gxrs ngus'
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+const sendNotificationEmail = async (subject, text) => {
+  const mailOptions = {
+    from: 'ification.sender@gmail.com',
+    to: 'mihailbg2005@gmail.com',
+    subject,
+    text,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Notification email sent successfully.');
+  } catch (error) {
+    console.error('Error sending notification email:', error);
+  }
+};
 
 const getPendings = async (req, res) => {
   const pendings = await Pending.find();
@@ -24,6 +53,8 @@ const deletePending = async (req, res) => {
   }
   const result = await pending.deleteOne({ _id: req.params.id });
   res.json(result);
+  
+  await sendNotificationEmail('Vacation Denied', `Your vacation was not approved!`);
 }
 
 module.exports = { getPendings, getPending, deletePending}

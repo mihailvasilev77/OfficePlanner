@@ -38,15 +38,15 @@ function App() {
             <Route path="/request" element={<Request />} />
           </Route>
 
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor]} />}>
             <Route path="/pendings" element={<Pendings/>} />
           </Route>
 
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
             <Route path="/calendar" element={<LeaveCalendar />} />
           </Route>
 
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor]} />}>
             <Route path="/edit" element={<Edit />} />
           </Route>
         </Route>

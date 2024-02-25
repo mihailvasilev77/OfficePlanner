@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const createController = require('../../controllers/createController');
+const vacationController = require('../../controllers/vacationController');
 
 router.route('/')
-    .get(createController.getAllVacations)
-    .post(createController.handleVacation);
+    .get(vacationController.getAllVacations)
+    .post(vacationController.handleVacation);
 
 module.exports = router;

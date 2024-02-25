@@ -31,18 +31,21 @@ const Pendings = () => {
     <div>
       <h1>Pending List</h1>
       <ul>
-        {pendingData.map((item, index) => (
-          <li key={index}>
-                Username: {item.username}<br/>
-                Start date: {moment(item.startDate).format("DD MMM YYYY, ddd")}<br/>
-                End date: {moment(item.endDate).format("DD MMM YYYY, ddd")}<br/>
-                Status: {item.status}
-            <br/>
-                <button onClick={() => goToEditPage(index)}>
-                Change Status
-                </button>
-          </li>
-        ))}
+        {pendingData?.length ? (
+            pendingData.map((item, index) => (
+                <li key={index}>
+                        Username: {item.username}<br/>
+                        Start date: {moment(item.startDate).format("DD MMM YYYY, ddd")}<br/>
+                        End date: {moment(item.endDate).format("DD MMM YYYY, ddd")}<br/>
+                        Status: {item.status}
+                    <br/>
+                        <button onClick={() => goToEditPage(index)}>
+                        Change Status
+                        </button>
+                </li>
+                ))
+            ) : <p>No pending vacations to display</p>
+        }
       </ul>
     </div>
   );
