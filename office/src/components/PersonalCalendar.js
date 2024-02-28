@@ -4,18 +4,20 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useParams } from 'react-router-dom';
 
 const localizer = momentLocalizer(moment);
-const VACATION_URL = '/vacation'
 
-function LeaveCalendar() {
+function PersonalCalendar() {
   const [pendingData, setPendingData] = useState([]);
   const axiosPrivate = useAxiosPrivate();
+  const { userId } = useParams();
+  console.log(userId)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosPrivate.get(VACATION_URL);
+        const response = await axiosPrivate.get(`/vacation/${userId}`);
         console.log(response.data)
         setPendingData(response.data);
       } catch (error) {
@@ -27,9 +29,8 @@ function LeaveCalendar() {
   }, [axiosPrivate]);
   
     return (
-      <div className="calendar-container">
+      <div>
         <h1>Calendar</h1>
-        <div className="calendar">
         <Calendar
           localizer={localizer}
           events={pendingData.map(item => ({
@@ -41,9 +42,8 @@ function LeaveCalendar() {
           endAccessor="end"
           style={{ height: 600 }}
         />
-        </div>
       </div>
     );
 };
 
-export default LeaveCalendar;
+export default PersonalCalendar;

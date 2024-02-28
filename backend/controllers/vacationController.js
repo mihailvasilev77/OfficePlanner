@@ -15,8 +15,8 @@ const transporter = nodemailer.createTransport({
 
 const sendNotificationEmail = async (subject, text) => {
   const mailOptions = {
-    from: 'ification.sender@gmail.com',
-    to: 'mihailbg2005@gmail.com', // Replace with the recipient's email
+    from: 'Vacation platfrom',
+    to: 'mihailbg2005@gmail.com',
     subject,
     text,
   };
@@ -62,4 +62,13 @@ const getAllVacations = async (req, res) => {
     }
  }
 
-module.exports = { handleVacation, getAllVacations}
+ const getVacation = async (req, res) => {
+  if (!req?.params?.id) return res.status(400).json({ "message": 'Vacation ID required' });
+  const vacation = await Vacation.find({ _id: req.params.id }).exec();
+  if (!vacation) {
+      return res.status(204).json({ 'message': `Vacation ID ${req.params.id} not found` });
+  }
+  res.json(vacation);
+}
+
+module.exports = { handleVacation, getAllVacations, getVacation }

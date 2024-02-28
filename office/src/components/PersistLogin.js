@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useRefreshToken from '../hooks/useRefreshToken';
 import useAuth from '../hooks/useAuth';
+import NavbarHook from "./NavbarHook";
 
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -36,10 +37,17 @@ const PersistLogin = () => {
     return (
         <>
             {!persist
-                ? <Outlet />
+                ? 
+                <main>
+                <NavbarHook/>
+                <Outlet />
+                </main>
                 : isLoading
                     ? <p>Loading...</p>
-                    : <Outlet />
+                    : <main>
+                    <NavbarHook/>
+                    <Outlet />
+                    </main>
             }
         </>
     )

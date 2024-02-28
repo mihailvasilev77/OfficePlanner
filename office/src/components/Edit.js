@@ -45,20 +45,17 @@ const Edit = () => {
                 withCredentials: true,
               });
             console.log(JSON.stringify(deleteResponse?.data));
-            setUser('');
-            setStartDate('');
-            setEndDate('');
-            setStatus('Pending');
+    
         }else if (status === 'Denied') {
             const deleteResponse = await axiosPrivate.delete(`/pending/${data[id]._id}`, {
                 withCredentials: true,
               });
             console.log(JSON.stringify(deleteResponse?.data));
-            setUser('');
-            setStartDate('');
-            setEndDate('');
-            setStatus('Pending');
           }
+          setUser('');
+          setStartDate('');
+          setEndDate('');
+          setStatus('Pending');
     } catch (err) {
         if (!err?.response) {
             setErrMsg('No server response.');
@@ -70,7 +67,7 @@ const Edit = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className='editForm' onSubmit={handleSubmit}>
       <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
       <h1>Edit the request for a vacation.</h1>
       <label htmlFor="username">

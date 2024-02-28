@@ -48,9 +48,9 @@ const Request = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+    <form className='requestForm' onSubmit={handleSubmit}>
       <h1>Create a request for vacation.</h1>
+      <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
       <label htmlFor="username">
         Username:&nbsp;
         <input

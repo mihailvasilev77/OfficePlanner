@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 const sendNotificationEmail = async (subject, text) => {
   const mailOptions = {
-    from: 'ification.sender@gmail.com',
+    from: 'Vacation platform',
     to: 'mihailbg2005@gmail.com',
     subject,
     text,

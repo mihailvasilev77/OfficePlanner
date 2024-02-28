@@ -87,6 +87,7 @@ const Login = () => {
                 <input
                     type="text"
                     id="username"
+                    placeholder='Enter your username'
                     ref={userRef}
                     autoComplete="off"
                     onChange={(e) => setUser(e.target.value)}
@@ -98,6 +99,7 @@ const Login = () => {
                 <input
                     type="password"
                     id="password"
+                    placeholder='Enter your password'
                     onChange={(e) => setPwd(e.target.value)}
                     value={pwd}
                     required

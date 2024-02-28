@@ -6,4 +6,7 @@ router.route('/')
     .get(vacationController.getAllVacations)
     .post(vacationController.handleVacation);
 
+router.route('/:id')
+    .get(vacationController.getVacation)
+
 module.exports = router;

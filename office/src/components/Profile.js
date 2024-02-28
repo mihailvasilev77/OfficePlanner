@@ -7,7 +7,7 @@ const Home = () => {
 
     const signOut = async () => {
         await logout();
-        navigate('/linkpage');
+        navigate('/login');
     }
 
     return (

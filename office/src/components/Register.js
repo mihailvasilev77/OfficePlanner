@@ -125,6 +125,7 @@ const Register = () => {
                         <input
                             type="text"
                             id="username"
+                            placeholder='Enter your username'
                             ref={userRef}
                             autoComplete="off"
                             onChange={(e) => setUser(e.target.value)}
@@ -148,6 +149,7 @@ const Register = () => {
                         <input
                             type="text"
                             id="fname"
+                            placeholder='Enter your first name'
                             ref={userRef}
                             onChange={(e) => setFName(e.target.value)}
                             value={fname}
@@ -162,6 +164,7 @@ const Register = () => {
                         <input
                             type="text"
                             id="lname"
+                            placeholder='Enter your last name'
                             ref={userRef}
                             onChange={(e) => setLName(e.target.value)}
                             value={lname}
@@ -178,6 +181,7 @@ const Register = () => {
                         <input
                             type="text"
                             id="email"
+                            placeholder='Enter your email'
                             ref={userRef}
                             autoComplete="off"
                             onChange={(e) => setEmail(e.target.value)}
@@ -202,6 +206,7 @@ const Register = () => {
                         <input
                             type="password"
                             id="password"
+                            placeholder='Enter your password'
                             onChange={(e) => setPwd(e.target.value)}
                             value={pwd}
                             required
@@ -226,6 +231,7 @@ const Register = () => {
                         <input
                             type="password"
                             id="confirm_pwd"
+                            placeholder='Confrim your password'
                             onChange={(e) => setMatchPwd(e.target.value)}
                             value={matchPwd}
                             required

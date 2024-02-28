@@ -28,12 +28,12 @@ const Pendings = () => {
   };
 
   return (
-    <div>
-      <h1>Pending List</h1>
-      <ul>
+    <div className='pendingList'>
+      <h1>Pendings List</h1>
+      <ul className='pendingUl'>
         {pendingData?.length ? (
             pendingData.map((item, index) => (
-                <li key={index}>
+                <li className='pendingLi' key={index}>
                         Username: {item.username}<br/>
                         Start date: {moment(item.startDate).format("DD MMM YYYY, ddd")}<br/>
                         End date: {moment(item.endDate).format("DD MMM YYYY, ddd")}<br/>

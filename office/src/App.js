@@ -1,6 +1,6 @@
 import Register from './components/Register';
 import Login from './components/Login';
-import Home from './components/Home';
+import Profile from './components/Profile';
 import Layout from './components/Layout';
 import Request from './components/Request';
 import LeaveCalendar from './components/LeaveCalendar';
@@ -11,6 +11,7 @@ import RequireAuth from './components/RequireAuth';
 import PersistLogin from './components/PersistLogin';
 import Pendings from './components/Pendings';
 import Edit from './components/Edit';
+import PersonalCalendar from './components/PersonalCalendar';
 import { Routes, Route } from 'react-router-dom';
 
 const ROLES = {
@@ -23,15 +24,17 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+  
+      <Route path="/" element={<Layout/>}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/linkpage" element={<LinkPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route element={<PersistLogin />}>
+          
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<LeaveCalendar />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
@@ -39,11 +42,15 @@ function App() {
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor]} />}>
-            <Route path="/pendings" element={<Pendings/>} />
+            <Route path="/pendings" element={<Pendings />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
-            <Route path="/calendar" element={<LeaveCalendar />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
+            <Route path="/vacation/:userId" element={<PersonalCalendar />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor]} />}>
