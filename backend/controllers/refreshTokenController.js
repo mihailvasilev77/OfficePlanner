@@ -23,7 +23,7 @@ const handleRefreshToken = async (req, res) => {
                 {
                     "UserInfo": {
                         "username": username,
-                        "roles":  lname,
+                        "roles":  roles,
                         "fname": fname,
                         "lname": lname,
                         "email": email,
@@ -33,7 +33,7 @@ const handleRefreshToken = async (req, res) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '5m' }
             );
-            res.json({ username, fname, lname, email, roles, accessToken })
+            res.json({ roles, username, fname, lname, email, vacationLeaves, accessToken })
         }
     );
 }

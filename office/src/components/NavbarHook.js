@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { IoClose, IoMenu } from "react-icons/io5";
 import { useMediaQuery } from "react-responsive";
+import useAuth from '../hooks/useAuth';
 import "../navbar_hook.css";
 
 const NavbarHook = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [username, setUsername] = useState("");
   const isMobile = useMediaQuery({ maxWidth: "1150px" });
+  const { auth } = useAuth();
+
+  useEffect(() => {
+    setUsername(auth?.username || auth?.user);
+  }, [auth?.username, auth?.user]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -65,7 +72,7 @@ const NavbarHook = () => {
     <header className="header">
       <nav className="nav container">
         <NavLink to="/" className="nav__logo">
-          Vacation platform
+          {username}
         </NavLink>
 
         {isMobile && (

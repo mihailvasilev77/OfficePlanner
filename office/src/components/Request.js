@@ -21,8 +21,8 @@ const Request = () => {
   }, []);
   
   useEffect(() => {
-    setUser(auth?.user);
-  }, [auth?.user]);
+    setUser(auth?.username || auth?.user);
+  }, [auth?.username, auth?.user]);
 
   const handleSubmit  = async (e) =>{
     e.preventDefault();
