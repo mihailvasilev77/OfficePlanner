@@ -29,6 +29,7 @@ function LeaveCalendar() {
     return (
       <div className="calendar-container">
         <h1>Calendar</h1>
+        <br/>
         <div className="calendar">
         <Calendar
           localizer={localizer}

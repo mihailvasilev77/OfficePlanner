@@ -15,6 +15,11 @@ body {
     min-height: 100vh;
     background-color: white;
     font-family: var(--body-font);
+    background-image: url("https://www.pptbackgrounds.net/uploads/soft-white-backgrounds-wallpapers.jpg");
+    height: 100%; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 :root {
@@ -170,6 +175,7 @@ ul {
 
 .line {
     display: inline-block;
+    text-decoration: underline;
 }
 
 .flexGrow {
