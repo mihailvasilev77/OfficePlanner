@@ -1,30 +1,45 @@
 import { useNavigate, Link } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
+import useAuth from '../hooks/useAuth';
+import React, { useEffect, useState } from "react";
+import copy from 'clipboard-copy';
 
 const Home = () => {
     const navigate = useNavigate();
     const logout = useLogout();
+    const { auth } = useAuth();
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+        setUsername(auth?.username || auth?.user);
+      }, [auth?.username, auth?.user]);
 
     const signOut = async () => {
         await logout();
         navigate('/login');
     }
 
+    const goToPersonalPage = () => {
+        navigate(`/vacation/${username}`);
+      };
+    
+    const shareableLink = `${window.location.origin}/vacation/${username}`;
+
+    const copyToClipboard = () => {
+        copy(shareableLink);
+        alert('Link copied to clipboard!');
+    };
+
     return (
         <section>
-            <h1>Home</h1>
+            <h1>Profile</h1>
             <br />
-            <p>You are logged in!</p>
+            <p>Hello, {username}</p>
             <br />
-            <Link to="/request">Go to the Request page</Link>
+            <button onClick={goToPersonalPage}>See your vacations</button>
             <br />
-            <Link to="/calendar">Go to the Calendar page</Link>
-            <br />
-            <Link to="/linkpage">Go to the link page</Link>
-            <br />
-            <Link to="/pendings">Go to the Pendings page</Link>
-            <br />
-            <Link to="/edit">Go to the Edit page</Link>
+            <p>Share your vacations</p>
+            <button onClick={copyToClipboard}>Copy to Clipboard</button>
             <div className="flexGrow">
                 <button onClick={signOut}>Sign Out</button>
             </div>

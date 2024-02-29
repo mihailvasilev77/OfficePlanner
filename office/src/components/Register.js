@@ -66,7 +66,6 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // if button enabled with JS hack
         const v1 = USER_REGEX.test(user);
         const v2 = PWD_REGEX.test(pwd);
         const v3 = EMAIL_REGEX.test(email);
@@ -82,8 +81,6 @@ const Register = () => {
                     withCredentials: true
                 }
             );
-            // TODO: remove console.logs before deployment
-            console.log(JSON.stringify(response?.data));
             setSuccess(true);
             setUser('');
             setFName('');
