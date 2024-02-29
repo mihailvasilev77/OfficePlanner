@@ -1,5 +1,5 @@
 # OfficePlanner
-This is a platform for managing vacations in a corporate setting. The project is divided into two folders, office being the front-end and backend - the back-end. Run them simultaneously to start the web application correctly. 
+This is a platform for managing vacations in a corporate setting. The project is divided into two folders, office being the front-end and backend - the back-end. Run them simultaneously to start the web application correctly. The front-end is based on React. The back-end is based on Express JS.
 
 ## Table of Contents
 + [Technologies](#Technologies)
