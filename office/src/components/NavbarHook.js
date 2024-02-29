@@ -33,7 +33,7 @@ const NavbarHook = () => {
     return (
       <ul className={listClassName}>
         <li>
-          <NavLink to="/" className={linkClassName} onClick={closeMobileMenu}>
+          <NavLink to="/calendar" className={linkClassName} onClick={closeMobileMenu}>
             Home
           </NavLink>
         </li>
