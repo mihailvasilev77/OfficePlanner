@@ -50,6 +50,12 @@ h1 {
     color: var( --first-color);
 }
 
+article {
+    padding: 100px; 
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 1rem;
+}
+
 section {
     width: 100%;
     max-width: 420px;
