@@ -6,13 +6,13 @@ import Request from './components/Request';
 import LeaveCalendar from './components/LeaveCalendar';
 import Missing from './components/Missing';
 import Unauthorized from './components/Unauthorized';
-import LinkPage from './components/LinkPage';
 import RequireAuth from './components/RequireAuth';
 import PersistLogin from './components/PersistLogin';
 import Pendings from './components/Pendings';
 import Edit from './components/Edit';
 import PersonalCalendar from './components/PersonalCalendar';
 import { Routes, Route } from 'react-router-dom';
+import FrontPage from './components/FrontPage';
 
 const ROLES = {
   'User': 2001,
@@ -25,15 +25,15 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout/>}>
+      <Route path="/" element={<FrontPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/linkpage" element={<LinkPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route element={<PersistLogin />}>
           
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>
-            <Route path="/" element={<LeaveCalendar />} />
+            <Route path="/calendar" element={<LeaveCalendar />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin,ROLES.Editor,ROLES.User]} />}>

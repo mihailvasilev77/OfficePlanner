@@ -144,7 +144,7 @@ const Register = () => {
                             First name:
                         </label>
                         <input
-                            type="text"
+                        type="text"
                             id="fname"
                             placeholder='Enter your first name'
                             ref={userRef}
@@ -247,7 +247,7 @@ const Register = () => {
                     <p>
                         Already have an account?&nbsp;
                         <span className="line">
-                            <Link to="/">Sign in</Link>
+                            <Link to="/login">Sign in</Link>
                         </span>
                     </p>
                 </section>

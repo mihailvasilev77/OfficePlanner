@@ -16,7 +16,7 @@ const Home = () => {
 
     const signOut = async () => {
         await logout();
-        navigate('/login');
+        navigate('/');
     }
 
     const goToPersonalPage = () => {
