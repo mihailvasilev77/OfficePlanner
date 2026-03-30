@@ -2,28 +2,26 @@ const User = require('../model/User');
 const bcrypt = require('bcrypt');
 
 const handleNewUser = async (req, res) => {
-    const { user, fname, lname, email, pwd } = req.body;
-    if (!user || !pwd || !email) return res.status(400).json({ 'message': 'Username, password and email are required.' });
+  const { user, fname, lname, email, pwd } = req.body;
 
-    const duplicate = await User.findOne({ username: user }).exec();
-    if (duplicate) return res.sendStatus(409);
+  if (!user || !pwd || !email) {
+    return res.status(400).json({ message: 'Username, password and email are required.' });
+  }
 
-    try {
-        const hashedPwd = await bcrypt.hash(pwd, 10);
-        const result = await User.create({
-            "username": user,
-            "fname" : fname,
-            "lname" : lname,
-            "email" : email,
-            "password": hashedPwd
-        });
+  const duplicate = await User.findOne({ username: user }).exec();
+  if (duplicate) return res.sendStatus(409);
 
-        console.log(result);
+  const hashedPwd = await bcrypt.hash(pwd, 10);
 
-        res.status(201).json({ 'success': `New user ${user} created!` });
-    } catch (err) {
-        res.status(500).json({ 'message': err.message });
-    }
-}
+  const result = await User.create({
+    username: user,
+    fname,
+    lname,
+    email,
+    password: hashedPwd,
+  });
+
+  res.status(201).json({ success: `New user ${result.username} created!` });
+};
 
 module.exports = { handleNewUser };

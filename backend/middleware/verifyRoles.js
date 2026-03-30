@@ -1,11 +1,15 @@
-const verifyRoles = (...allowedRoles) => {
-    return (req, res, next) => {
-        if (!req?.roles) return res.sendStatus(401);
-        const rolesArray = [...allowedRoles];
-        const result = req.roles.map(role => rolesArray.includes(role)).find(val => val === true);
-        if (!result) return res.sendStatus(401);
-        next();
-    }
-}
+/**
+ * Factory that returns middleware to guard routes by role.
+ *
+ *   router.get('/', verifyRoles(ROLES_LIST.Admin), controller);
+ */
+const verifyRoles = (...allowedRoles) => (req, res, next) => {
+  if (!req?.roles) return res.sendStatus(401);
 
-module.exports = verifyRoles
+  const hasRole = req.roles.some((role) => allowedRoles.includes(role));
+  if (!hasRole) return res.sendStatus(401);
+
+  next();
+};
+
+module.exports = verifyRoles;

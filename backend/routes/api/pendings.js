@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const pendingController = require('../../controllers/pendingController');
+const asyncHandler = require('../../middleware/asyncHandler');
+const { getPendings, getPending, deletePending } = require('../../controllers/pendingController');
 
 router.route('/')
-    .get(pendingController.getPendings);
+  .get(asyncHandler(getPendings));
 
 router.route('/:id')
-    .get(pendingController.getPending)
-    .delete(pendingController.deletePending);
-
+  .get(asyncHandler(getPending))
+  .delete(asyncHandler(deletePending));
 
 module.exports = router;
