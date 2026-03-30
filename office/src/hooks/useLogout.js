@@ -1,22 +1,22 @@
-import axios from "../api/axios";
-import useAuth from "./useAuth";
+import { useCallback } from 'react';
+import axiosPublic from '../api/axios';
+import useAuth from './useAuth';
 
 const useLogout = () => {
-    const { setAuth } = useAuth();
+  const { setAuth, broadcastLogout } = useAuth();
 
-    const logout = async () => {
-        setAuth({});
-        try {
-            //eslint-disable-next-line
-            const response = await axios('/logout', {
-                withCredentials: true
-            });
-        } catch (err) {
-            console.error(err);
-        }
+  const logout = useCallback(async () => {
+    setAuth({});
+    broadcastLogout();
+
+    try {
+      await axiosPublic.get('/logout', { withCredentials: true });
+    } catch (err) {
+      console.error('Logout request failed:', err);
     }
+  }, [setAuth, broadcastLogout]);
 
-    return logout;
-}
+  return logout;
+};
 
-export default useLogout
+export default useLogout;

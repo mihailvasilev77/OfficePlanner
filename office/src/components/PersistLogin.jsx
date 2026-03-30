@@ -1,56 +1,48 @@
-import { Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import useRefreshToken from '../hooks/useRefreshToken';
 import useAuth from '../hooks/useAuth';
-import NavbarHook from "./NavbarHook";
 
+/**
+ * Layout route that silently refreshes the access token on hard reloads
+ * when "persist" (remember me) is enabled.
+ *
+ * Architectural change: NavbarHook has been moved up to <Layout /> where
+ * it belongs — PersistLogin is now purely an auth-refresh gate.
+ */
 const PersistLogin = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const refresh = useRefreshToken();
-    const { auth, persist } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const refresh = useRefreshToken();
+  const { auth, persist } = useAuth();
 
-    useEffect(() => {
-        let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-        const verifyRefreshToken = async () => {
-            try {
-                await refresh();
-            }
-            catch (err) {
-                console.error(err);
-            }
-            finally {
-                isMounted && setIsLoading(false);
-            }
-        }
-        
-        !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
+    const verifyRefreshToken = async () => {
+      try {
+        await refresh();
+      } catch {
+        // Refresh failed — user will be redirected by RequireAuth
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
 
-        return () => isMounted = false;
-    }, [auth?.accessToken, persist, refresh])
+    if (!auth?.accessToken && persist) {
+      verifyRefreshToken();
+    } else {
+      setIsLoading(false);
+    }
 
-    useEffect(() => {
-        console.log(`isLoading: ${isLoading}`)
-        console.log(`aT: ${JSON.stringify(auth?.accessToken)}`)
-    }, [isLoading, auth?.accessToken])
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    return (
-        <>
-            {!persist
-                ? 
-                <main>
-                <NavbarHook/>
-                <Outlet />
-                </main>
-                : isLoading
-                    ? <p>Loading...</p>
-                    : <main>
-                    <NavbarHook/>
-                    <Outlet />
-                    </main>
-            }
-        </>
-    )
-}
+  if (!persist) return <Outlet />;
+  if (isLoading) return <p>Loading...</p>;
+  return <Outlet />;
+};
 
-export default PersistLogin
+export default PersistLogin;

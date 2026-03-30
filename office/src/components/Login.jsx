@@ -1,129 +1,130 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
+import { Link, Form, useActionData, useNavigate, useLocation } from 'react-router-dom';
+import axiosPublic from '../api/axios';
+import { setAuth as setStoreAuth } from '../store/authStore';
 import useAuth from '../hooks/useAuth';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from '../api/axios';
 
-const LOGIN_URL = '/auth';
+/**
+ * Router action — runs on <Form> submission (no manual e.preventDefault).
+ *
+ * Fixes:
+ *  - Only sends `user` and `pwd` to /auth (Login sent fname/lname/email before).
+ *  - Returns structured error for the component to display.
+ */
+export const loginAction = async ({ request }) => {
+  const formData = await request.formData();
+  const user = formData.get('user');
+  const pwd = formData.get('pwd');
+
+  if (!user || !pwd) {
+    return { error: 'Username and password are required.' };
+  }
+
+  try {
+    const { data } = await axiosPublic.post(
+      '/auth',
+      { user, pwd },
+      { headers: { 'Content-Type': 'application/json' }, withCredentials: true },
+    );
+
+    // Write to the external store so interceptors have the token immediately
+    setStoreAuth({
+      roles: data.roles,
+      user,
+      username: data.username,
+      fname: data.fname,
+      lname: data.lname,
+      email: data.email,
+      vacationLeaves: data.vacationLeaves,
+      accessToken: data.accessToken,
+    });
+
+    // Signal success + broadcast login for cross-tab sync
+    return { success: true, user };
+  } catch (err) {
+    if (!err?.response) return { error: 'No Server Response' };
+    if (err.response?.status === 400) return { error: 'Missing Username or Password' };
+    if (err.response?.status === 401) return { error: 'Unauthorized' };
+    return { error: 'Login Failed' };
+  }
+};
 
 const Login = () => {
-    const { setAuth, persist, setPersist } = useAuth();
+  const actionData = useActionData();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { persist, setPersist, broadcastLogin } = useAuth();
 
-    const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
+  const userRef = useRef();
+  const from = location.state?.from?.pathname || '/calendar';
 
-    const userRef = useRef();
-    const errRef = useRef();
+  useEffect(() => {
+    document.title = 'Login page';
+    userRef.current?.focus();
+  }, []);
 
-    const [user, setUser] = useState('');
-    const [pwd, setPwd] = useState('');
-    const [fname, setFName] = useState('');
-    const [lname, setLName] = useState('');
-    const [email, setEmail] = useState('');
-    const [errMsg, setErrMsg] = useState('');
-
-    useEffect(() => {
-        document.title = "Login page"
-     }, []);
-
-    useEffect(() => {
-        userRef.current.focus();
-    }, [])
-
-    useEffect(() => {
-        setErrMsg('');
-    }, [user, fname, lname, email, pwd])
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ user, fname, lname, email, pwd }),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
-            );
-            console.log(JSON.stringify(response?.data));
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
-            setAuth({ roles, user, pwd, fname, lname, email, accessToken });
-            setUser('');
-            setPwd('');
-            setLName('');
-            setFName('');
-            setEmail('');
-            navigate(from, { replace: true });
-        } catch (err) {
-            if (!err?.response) {
-                setErrMsg('No Server Response');
-            } else if (err.response?.status === 400) {
-                setErrMsg('Missing Username or Password');
-            } else if (err.response?.status === 401) {
-                setErrMsg('Unauthorized');
-            } else {
-                setErrMsg('Login Failed');
-            }
-            errRef.current.focus();
-        }
+  // Navigate after successful login
+  useEffect(() => {
+    if (actionData?.success) {
+      broadcastLogin();
+      navigate(from, { replace: true });
     }
+  }, [actionData, navigate, from, broadcastLogin]);
 
-    const togglePersist = () => {
-        setPersist(prev => !prev);
-    }
+  // Sync persist checkbox to localStorage
+  useEffect(() => {
+    localStorage.setItem('persist', persist);
+  }, [persist]);
 
-    useEffect(() => {
-        localStorage.setItem("persist", persist);
-    }, [persist])
+  return (
+    <section>
+      {actionData?.error && (
+        <p className="errmsg" aria-live="assertive">
+          {actionData.error}
+        </p>
+      )}
+      <h1>Sign In</h1>
+      <Form method="post">
+        <label htmlFor="username">Username:</label>
+        <input
+          type="text"
+          id="username"
+          name="user"
+          placeholder="Enter your username"
+          ref={userRef}
+          autoComplete="off"
+          required
+        />
 
-    return (
+        <label htmlFor="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="pwd"
+          placeholder="Enter your password"
+          required
+        />
 
-        <section>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-            <h1>Sign In</h1>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Username:</label>
-                <input
-                    type="text"
-                    id="username"
-                    placeholder='Enter your username'
-                    ref={userRef}
-                    autoComplete="off"
-                    onChange={(e) => setUser(e.target.value)}
-                    value={user}
-                    required
-                />
+        <button type="submit">Sign In</button>
 
-                <label htmlFor="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    placeholder='Enter your password'
-                    onChange={(e) => setPwd(e.target.value)}
-                    value={pwd}
-                    required
-                />
-                <button>Sign In</button>
-                <div className="persistCheck">
-                    <input
-                        type="checkbox"
-                        id="persist"
-                        onChange={togglePersist}
-                        checked={persist}
-                    />
-                    <label htmlFor="persist">Remember this device</label>
-                </div>
-            </form>
-            <p>
-                Dont have an account?&nbsp;
-                <span className="line">
-                    <Link to="/register">Sign up</Link>
-                </span>
-            </p>
-        </section>
+        <div className="persistCheck">
+          <input
+            type="checkbox"
+            id="persist"
+            onChange={() => setPersist((prev) => !prev)}
+            checked={persist}
+          />
+          <label htmlFor="persist">Remember this device</label>
+        </div>
+      </Form>
+      <p>
+        Don't have an account?&nbsp;
+        <span className="line">
+          <Link to="/register">Sign up</Link>
+        </span>
+      </p>
+    </section>
+  );
+};
 
-    )
-}
-
-export default Login
+export default Login;

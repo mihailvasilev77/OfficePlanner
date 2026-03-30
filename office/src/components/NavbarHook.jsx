@@ -1,64 +1,48 @@
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import { IoClose, IoMenu } from "react-icons/io5";
-import { useMediaQuery } from "react-responsive";
+import { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { IoClose, IoMenu } from 'react-icons/io5';
+import { useMediaQuery } from 'react-responsive';
 import useAuth from '../hooks/useAuth';
-import "../navbar_hook.css";
+import '../navbar_hook.css';
 
 const NavbarHook = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [username, setUsername] = useState("");
-  const isMobile = useMediaQuery({ maxWidth: "1150px" });
+  const isMobile = useMediaQuery({ maxWidth: '1150px' });
   const { auth } = useAuth();
 
-  useEffect(() => {
-    setUsername(auth?.username || auth?.user);
-  }, [auth?.username, auth?.user]);
+  // Derive username directly — no useEffect + useState needed
+  const username = auth?.username || auth?.user || '';
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   const closeMobileMenu = () => {
-    if (isMobile) {
-      setIsMenuOpen(false);
-    }
+    if (isMobile) setIsMenuOpen(false);
   };
 
   const renderNavLinks = () => {
-    const listClassName = isMobile ? "nav__list" : "nav__list__web";
-    const linkClassName = "nav__link";
-    const buttonClassName = "nav__cta";
+    const listClassName = isMobile ? 'nav__list' : 'nav__list__web';
 
     return (
       <ul className={listClassName}>
         <li>
-          <NavLink to="/calendar" className={linkClassName} onClick={closeMobileMenu}>
+          <NavLink to="/calendar" className="nav__link" onClick={closeMobileMenu}>
             Home
           </NavLink>
         </li>
         <li>
-          <NavLink
-            to="/pendings"
-            className={linkClassName}
-            onClick={closeMobileMenu}
-          >
+          <NavLink to="/pendings" className="nav__link" onClick={closeMobileMenu}>
             Pending Vacations
           </NavLink>
         </li>
         <li>
-          <NavLink
-            to="/profile"
-            className={linkClassName}
-            onClick={closeMobileMenu}
-          >
+          <NavLink to="/profile" className="nav__link" onClick={closeMobileMenu}>
             Profile
           </NavLink>
         </li>
         <li>
           <NavLink
             to="/request"
-            className={`${linkClassName} ${buttonClassName}`}
+            className="nav__link nav__cta"
             onClick={closeMobileMenu}
           >
             Request Vacation
@@ -83,7 +67,7 @@ const NavbarHook = () => {
 
         {isMobile ? (
           <div
-            className={`nav__menu  ${isMenuOpen ? "show-menu" : ""}`}
+            className={`nav__menu ${isMenuOpen ? 'show-menu' : ''}`}
             id="nav-menu"
           >
             {renderNavLinks()}

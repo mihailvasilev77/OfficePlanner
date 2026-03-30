@@ -1,51 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useLoaderData, Link } from 'react-router-dom';
+import { axiosPrivate } from '../api/axios';
 import moment from 'moment';
-import { useNavigate } from 'react-router-dom';
 
-const PENDING_URL = '/pending'
+/**
+ * Router loader — fetches pending requests before the component renders.
+ * Eliminates useEffect + useState data-fetching pattern.
+ */
+export const pendingsLoader = async () => {
+  const { data } = await axiosPrivate.get('/pending');
+  return data ?? [];
+};
 
+/**
+ * Pendings list.
+ *
+ * Bug fixes:
+ *  - Uses database `_id` as React key instead of array index.
+ *  - Navigates to `/edit/:id` with only the ID in the URL (not the
+ *    entire pendingData array through router state).
+ */
 const Pendings = () => {
-  const [pendingData, setPendingData] = useState([]);
-  const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosPrivate.get(PENDING_URL);
-        setPendingData(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [axiosPrivate]);
-
-  const goToEditPage = (index) => {
-    navigate('/edit', { state : {data: pendingData, id: index} });
-  };
+  const pendingData = useLoaderData();
 
   return (
-    <div className='pendingList'>
+    <div className="pendingList">
       <h1>Pendings List</h1>
-      <ul className='pendingUl'>
+      <ul className="pendingUl">
         {pendingData?.length ? (
-            pendingData.map((item, index) => (
-                <li className='pendingLi' key={index}>
-                        Username: {item.username}<br/>
-                        Start date: {moment(item.startDate).format("DD MMM YYYY, ddd")}<br/>
-                        End date: {moment(item.endDate).format("DD MMM YYYY, ddd")}<br/>
-                        Status: {item.status}
-                    <br/>
-                        <button onClick={() => goToEditPage(index)}>
-                        Change Status
-                        </button>
-                </li>
-                ))
-            ) : <p>No pending vacations to display</p>
-        }
+          pendingData.map((item) => (
+            <li className="pendingLi" key={item._id}>
+              Username: {item.username}
+              <br />
+              Start date: {moment(item.startDate).format('DD MMM YYYY, ddd')}
+              <br />
+              End date: {moment(item.endDate).format('DD MMM YYYY, ddd')}
+              <br />
+              Status: {item.status}
+              <br />
+              <Link to={`/edit/${item._id}`}>
+                <button type="button">Change Status</button>
+              </Link>
+            </li>
+          ))
+        ) : (
+          <p>No pending vacations to display</p>
+        )}
       </ul>
     </div>
   );

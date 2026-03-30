@@ -1,86 +1,73 @@
-import React, { useState, useRef, useEffect } from 'react';
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import "react-datepicker/dist/react-datepicker.css";
+import { Form, useActionData } from 'react-router-dom';
+import { axiosPrivate } from '../api/axios';
+import { getAuth } from '../store/authStore';
 import useAuth from '../hooks/useAuth';
+import { useEffect } from 'react';
 
-const REQUEST_URL = "/request";
+/**
+ * Router action — submits a new vacation request.
+ */
+export const requestAction = async ({ request }) => {
+  const formData = await request.formData();
+  const user = formData.get('user');
+  const startDate = formData.get('startDate');
+  const endDate = formData.get('endDate');
+
+  if (!startDate || !endDate) {
+    return { error: 'Start and end dates are required.' };
+  }
+
+  try {
+    await axiosPrivate.post('/request', { user, startDate, endDate });
+    return { success: true };
+  } catch (err) {
+    if (!err?.response) return { error: 'No server response.' };
+    return { error: 'Request failed.' };
+  }
+};
 
 const Request = () => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [user, setUser] = useState('');
-
-  const axiosPrivate = useAxiosPrivate();
+  const actionData = useActionData();
   const { auth } = useAuth();
-  
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState('');
+  const username = auth?.username || auth?.user || '';
 
   useEffect(() => {
-    document.title = "Request a vacation"
+    document.title = 'Request a vacation';
   }, []);
-  
-  useEffect(() => {
-    setUser(auth?.username || auth?.user);
-  }, [auth?.username, auth?.user]);
-
-  const handleSubmit  = async (e) =>{
-    e.preventDefault();
-    try {
-        const response = await axiosPrivate.post(REQUEST_URL,
-            JSON.stringify({user, startDate, endDate}),
-            {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
-            }
-        );
-        console.log(JSON.stringify(response?.data));
-        setStartDate('');
-        setEndDate('');
-    } catch (err) {
-        if (!err?.response) {
-            setErrMsg('No server response.');
-        } else {
-            setErrMsg('Request failed.')
-        }
-        errRef.current.focus();
-    }
-  };
 
   return (
-    <form className='requestForm' onSubmit={handleSubmit}>
+    <Form className="requestForm" method="post">
       <h1>Create a request for vacation.</h1>
-      <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+
+      {actionData?.error && (
+        <p className="errmsg" aria-live="assertive">
+          {actionData.error}
+        </p>
+      )}
+
+      {actionData?.success && (
+        <p className="successmsg" aria-live="polite">
+          Vacation request submitted successfully!
+        </p>
+      )}
+
       <label htmlFor="username">
         Username:&nbsp;
-        <input
-          type="text"
-          value={user}
-          readOnly
-        />
+        <input type="text" name="user" value={username} readOnly />
       </label>
+
       <label htmlFor="startDate">
         Start Date:&nbsp;
-        <input
-            type="date" 
-            id="startDate"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-        />
+        <input type="date" id="startDate" name="startDate" required />
       </label>
+
       <label htmlFor="endDate">
         End Date:&nbsp;
-        <input 
-            type="date" 
-            id="endDate"
-            value={endDate} 
-            onChange={(e) => setEndDate(e.target.value)}
-            required
-        />
+        <input type="date" id="endDate" name="endDate" required />
       </label>
+
       <button type="submit">Submit</button>
-    </form>
+    </Form>
   );
 };
 

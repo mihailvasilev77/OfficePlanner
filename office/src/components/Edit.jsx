@@ -1,115 +1,124 @@
-import React, { useState, useRef, useEffect } from 'react';
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import "react-datepicker/dist/react-datepicker.css";
-import { useLocation } from 'react-router-dom';
+import { Form, useLoaderData, useActionData, useNavigate, Link } from 'react-router-dom';
+import { axiosPrivate } from '../api/axios';
+import { useEffect } from 'react';
 import moment from 'moment';
 
-const EDIT_URL = "/vacation";
+/**
+ * Router loader — fetches a single pending item by its `_id` param.
+ *
+ * Bug fix: The old code relied entirely on `location.state` which is
+ * null after a page refresh, crashing the app. Now the data comes from
+ * the URL param + an API call, surviving refreshes gracefully.
+ */
+export const editLoader = async ({ params }) => {
+  try {
+    const { data } = await axiosPrivate.get(`/pending/${params.id}`);
+    return data;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Router action — handles the approve/deny form submission.
+ */
+export const editAction = async ({ request, params }) => {
+  const formData = await request.formData();
+  const status = formData.get('status');
+  const user = formData.get('user');
+  const startDate = formData.get('startDate');
+  const endDate = formData.get('endDate');
+
+  try {
+    if (status === 'Approved') {
+      // Create the approved vacation entry
+      await axiosPrivate.post('/vacation', { user, startDate, endDate });
+      // Delete the pending request
+      await axiosPrivate.delete(`/pending/${params.id}`);
+    } else if (status === 'Denied') {
+      // Just delete the pending request
+      await axiosPrivate.delete(`/pending/${params.id}`);
+    }
+
+    return { success: true };
+  } catch (err) {
+    if (!err?.response) return { error: 'No server response.' };
+    return { error: 'Edit failed.' };
+  }
+};
 
 const Edit = () => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [user, setUser] = useState('');
-  const [status, setStatus] = useState('Pending');
-  const location = useLocation();
-  const { data, id } = location.state || {};
+  const vacationItem = useLoaderData();
+  const actionData = useActionData();
+  const navigate = useNavigate();
 
-  const axiosPrivate = useAxiosPrivate();
-  
-  const errRef = useRef();
-  const [errMsg, setErrMsg] = useState('');
-
+  // Redirect to pendings on successful action
   useEffect(() => {
-    document.title = "Edit a request"
-  }, []);
-
-  useEffect(() => {
-    setUser(data[id].username);
-    setStartDate(moment(data[id].startDate).format("YYYY-MM-DD"));
-    setEndDate(moment(data[id].endDate).format("YYYY-MM-DD"));
-  }, [data, id]);
-
-  const handleSubmit  = async (e) =>{
-    e.preventDefault();
-    try {
-        if (status === 'Approved') {
-            const response = await axiosPrivate.post(EDIT_URL,
-                JSON.stringify({user, startDate, endDate}),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
-            );
-            console.log(JSON.stringify(response?.data));
-            const deleteResponse = await axiosPrivate.delete(`/pending/${data[id]._id}`, {
-                withCredentials: true,
-              });
-            console.log(JSON.stringify(deleteResponse?.data));
-    
-        }else if (status === 'Denied') {
-            const deleteResponse = await axiosPrivate.delete(`/pending/${data[id]._id}`, {
-                withCredentials: true,
-              });
-            console.log(JSON.stringify(deleteResponse?.data));
-          }
-          setUser('');
-          setStartDate('');
-          setEndDate('');
-          setStatus('Pending');
-    } catch (err) {
-        if (!err?.response) {
-            setErrMsg('No server response.');
-        } else {
-            setErrMsg('Edit failed.')
-        }
-        errRef.current.focus();
+    if (actionData?.success) {
+      navigate('/pendings');
     }
-  };
+  }, [actionData, navigate]);
+
+  // Fallback UI if the item wasn't found (replaces the old crash)
+  if (!vacationItem) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <h2>No vacation data found.</h2>
+        <p>The request may have been deleted or the ID is invalid.</p>
+        <Link to="/pendings">Go back to Pendings</Link>
+      </div>
+    );
+  }
 
   return (
-    <form className='editForm' onSubmit={handleSubmit}>
-      <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+    <Form className="editForm" method="post">
+      {actionData?.error && (
+        <p className="errmsg" aria-live="assertive">
+          {actionData.error}
+        </p>
+      )}
       <h1>Edit the request for a vacation.</h1>
+
       <label htmlFor="username">
         Username:&nbsp;
-        <input
-          type="text"
-          value={user}
-          readOnly
-        />
+        <input type="text" name="user" value={vacationItem.username} readOnly />
       </label>
+
       <label htmlFor="startDate">
         Start Date:&nbsp;
         <input
-            type="date" 
-            id="startDate"
-            value={startDate}
-            readOnly
+          type="date"
+          id="startDate"
+          name="startDate"
+          defaultValue={moment(vacationItem.startDate).format('YYYY-MM-DD')}
+          readOnly
         />
       </label>
+
       <label htmlFor="endDate">
         End Date:&nbsp;
-        <input 
-            type="date" 
-            id="endDate"
-            value={endDate} 
-            readOnly
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          defaultValue={moment(vacationItem.endDate).format('YYYY-MM-DD')}
+          readOnly
         />
       </label>
+
       <label htmlFor="status">
         Status:&nbsp;
-        <select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-        >
-        <option value="Pending" disabled>Pending</option>
-        <option value="Denied">Denied</option>
-        <option value="Approved">Approved</option>
-      </select>
+        <select id="status" name="status" defaultValue="Pending">
+          <option value="Pending" disabled>
+            Pending
+          </option>
+          <option value="Denied">Denied</option>
+          <option value="Approved">Approved</option>
+        </select>
       </label>
+
       <button type="submit">Submit</button>
-    </form>
+    </Form>
   );
 };
 

@@ -1,19 +1,17 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-const FrontPage = () => {
-  return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Vacation Platform</h1>
-      <p style={styles.description}>
-        Welcome to our vacation management platform. Plan your vacations with ease and efficiency.
-      </p>
-      <Link to="/calendar" style={styles.button}>
-        Get started
-      </Link>
-    </div>
-  );
-};
+const FrontPage = () => (
+  <div style={styles.container}>
+    <h1 style={styles.title}>Vacation Platform</h1>
+    <p style={styles.description}>
+      Welcome to our vacation management platform. Plan your vacations with
+      ease and efficiency.
+    </p>
+    <Link to="/calendar" style={styles.button}>
+      Get started
+    </Link>
+  </div>
+);
 
 const styles = {
   container: {
@@ -27,14 +25,8 @@ const styles = {
     padding: '20px',
     borderRadius: '1rem',
   },
-  title: {
-    fontSize: '3rem',
-    marginBottom: '20px',
-  },
-  description: {
-    fontSize: '1.2rem',
-    marginBottom: '30px',
-  },
+  title: { fontSize: '3rem', marginBottom: '20px' },
+  description: { fontSize: '1.2rem', marginBottom: '30px' },
   button: {
     padding: '10px 20px',
     fontSize: '1rem',
@@ -42,7 +34,7 @@ const styles = {
     color: 'black',
     textDecoration: 'none',
     borderRadius: '5px',
-    border: "1px solid black",
+    border: '1px solid black',
     cursor: 'pointer',
   },
 };
