@@ -1,12 +1,8 @@
 import { Form, useActionData } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
-import { getAuth } from '../store/authStore';
 import useAuth from '../hooks/useAuth';
 import { useEffect } from 'react';
 
-/**
- * Router action — submits a new vacation request.
- */
 export const requestAction = async ({ request }) => {
   const formData = await request.formData();
   const user = formData.get('user');
@@ -37,12 +33,10 @@ const Request = () => {
 
   return (
     <Form className="requestForm" method="post">
-      <h1>Create a request for vacation.</h1>
+      <h1>Request Vacation</h1>
 
       {actionData?.error && (
-        <p className="errmsg" aria-live="assertive">
-          {actionData.error}
-        </p>
+        <p className="errmsg" aria-live="assertive">{actionData.error}</p>
       )}
 
       {actionData?.success && (
@@ -51,22 +45,16 @@ const Request = () => {
         </p>
       )}
 
-      <label htmlFor="username">
-        Username:&nbsp;
-        <input type="text" name="user" value={username} readOnly />
-      </label>
+      <label htmlFor="username">Employee</label>
+      <input type="text" name="user" value={username} readOnly />
 
-      <label htmlFor="startDate">
-        Start Date:&nbsp;
-        <input type="date" id="startDate" name="startDate" required />
-      </label>
+      <label htmlFor="startDate">Start Date</label>
+      <input type="date" id="startDate" name="startDate" required />
 
-      <label htmlFor="endDate">
-        End Date:&nbsp;
-        <input type="date" id="endDate" name="endDate" required />
-      </label>
+      <label htmlFor="endDate">End Date</label>
+      <input type="date" id="endDate" name="endDate" required />
 
-      <button type="submit">Submit</button>
+      <button type="submit">Submit Request</button>
     </Form>
   );
 };

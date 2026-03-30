@@ -2,48 +2,40 @@ import { useLoaderData, Link } from 'react-router-dom';
 import { axiosPrivate } from '../api/axios';
 import moment from 'moment';
 
-/**
- * Router loader — fetches pending requests before the component renders.
- * Eliminates useEffect + useState data-fetching pattern.
- */
 export const pendingsLoader = async () => {
   const { data } = await axiosPrivate.get('/pending');
   return data ?? [];
 };
 
-/**
- * Pendings list.
- *
- * Bug fixes:
- *  - Uses database `_id` as React key instead of array index.
- *  - Navigates to `/edit/:id` with only the ID in the URL (not the
- *    entire pendingData array through router state).
- */
 const Pendings = () => {
   const pendingData = useLoaderData();
 
   return (
     <div className="pendingList">
-      <h1>Pendings List</h1>
+      <h1>Pending Requests</h1>
       <ul className="pendingUl">
         {pendingData?.length ? (
           pendingData.map((item) => (
             <li className="pendingLi" key={item._id}>
-              Username: {item.username}
-              <br />
-              Start date: {moment(item.startDate).format('DD MMM YYYY, ddd')}
-              <br />
-              End date: {moment(item.endDate).format('DD MMM YYYY, ddd')}
-              <br />
-              Status: {item.status}
-              <br />
+              <strong style={{ fontSize: 'var(--font-size-base)', color: 'var(--color-neutral-900)' }}>
+                {item.username}
+              </strong>
+              <span>
+                {moment(item.startDate).format('DD MMM YYYY')} &mdash;{' '}
+                {moment(item.endDate).format('DD MMM YYYY')}
+              </span>
+              <span style={{ color: 'var(--color-warning-600)', fontWeight: 'var(--font-weight-medium)' }}>
+                {item.status}
+              </span>
               <Link to={`/edit/${item._id}`}>
-                <button type="button">Change Status</button>
+                <button type="button">Review</button>
               </Link>
             </li>
           ))
         ) : (
-          <p>No pending vacations to display</p>
+          <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 'var(--space-8)' }}>
+            No pending vacations to display
+          </p>
         )}
       </ul>
     </div>

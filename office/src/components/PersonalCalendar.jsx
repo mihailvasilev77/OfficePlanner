@@ -1,4 +1,4 @@
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useParams } from 'react-router-dom';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
@@ -7,13 +7,6 @@ import { useEffect } from 'react';
 
 const localizer = momentLocalizer(moment);
 
-/**
- * Router loader — fetches vacations filtered by username from the URL param.
- *
- * The old code fetched ALL vacations and filtered client-side using a
- * convoluted ID-to-username lookup. Now the backend provides a dedicated
- * /vacation/user/:username endpoint so we only transfer the data we need.
- */
 export const personalCalendarLoader = async ({ params }) => {
   try {
     const { data } = await axiosPrivate.get(`/vacation/user/${params.username}`);
@@ -25,10 +18,11 @@ export const personalCalendarLoader = async ({ params }) => {
 
 const PersonalCalendar = () => {
   const vacations = useLoaderData();
+  const { username } = useParams();
 
   useEffect(() => {
-    document.title = 'Personal Calendar';
-  }, []);
+    document.title = `${username}'s Calendar`;
+  }, [username]);
 
   const events = vacations.map((item) => ({
     title: item.username,
@@ -38,8 +32,7 @@ const PersonalCalendar = () => {
 
   return (
     <div className="calendar-container">
-      <h1>Personal Calendar</h1>
-      <br />
+      <h1>{username}'s Vacations</h1>
       <div className="calendar">
         <Calendar
           localizer={localizer}

@@ -7,9 +7,6 @@ import { useEffect } from 'react';
 
 const localizer = momentLocalizer(moment);
 
-/**
- * Router loader — fetches all approved vacations for the shared calendar.
- */
 export const calendarLoader = async () => {
   try {
     const { data } = await axiosPrivate.get('/vacation');
@@ -34,8 +31,7 @@ const LeaveCalendar = () => {
 
   return (
     <div className="calendar-container">
-      <h1>Calendar</h1>
-      <br />
+      <h1>Team Calendar</h1>
       <div className="calendar">
         <Calendar
           localizer={localizer}

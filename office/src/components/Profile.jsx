@@ -3,15 +3,6 @@ import useLogout from '../hooks/useLogout';
 import useAuth from '../hooks/useAuth';
 import { useEffect } from 'react';
 
-/**
- * Profile component.
- *
- * Bug fix: The component was exported as `Home` but the file was `Profile.jsx`.
- * Renamed to match the file name.
- *
- * Bug fix: Replaced the `clipboard-copy` npm package with the native
- * navigator.clipboard API to eliminate an unnecessary dependency.
- */
 const Profile = () => {
   const navigate = useNavigate();
   const logout = useLogout();
@@ -39,7 +30,6 @@ const Profile = () => {
       await navigator.clipboard.writeText(shareableLink);
       alert('Link copied to clipboard!');
     } catch {
-      // Fallback for browsers that don't support clipboard API
       prompt('Copy this link:', shareableLink);
     }
   };
@@ -47,13 +37,15 @@ const Profile = () => {
   return (
     <section>
       <h1>Profile</h1>
-      <br />
-      <p>Hello, {username}</p>
-      <br />
-      <button onClick={goToPersonalPage}>See your vacations</button>
-      <br />
-      <p>Share your vacations</p>
-      <button onClick={copyToClipboard}>Copy to Clipboard</button>
+      <p style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-neutral-800)', marginTop: 'var(--space-2)' }}>
+        Hello, <strong>{username}</strong>
+      </p>
+
+      <div className="profile-actions">
+        <button onClick={goToPersonalPage}>See your vacations</button>
+        <button onClick={copyToClipboard}>Copy shareable link</button>
+      </div>
+
       <div className="flexGrow">
         <button onClick={signOut}>Sign Out</button>
       </div>

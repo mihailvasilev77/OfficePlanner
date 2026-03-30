@@ -3,13 +3,6 @@ import { axiosPrivate } from '../api/axios';
 import { useEffect } from 'react';
 import moment from 'moment';
 
-/**
- * Router loader — fetches a single pending item by its `_id` param.
- *
- * Bug fix: The old code relied entirely on `location.state` which is
- * null after a page refresh, crashing the app. Now the data comes from
- * the URL param + an API call, surviving refreshes gracefully.
- */
 export const editLoader = async ({ params }) => {
   try {
     const { data } = await axiosPrivate.get(`/pending/${params.id}`);
@@ -19,9 +12,6 @@ export const editLoader = async ({ params }) => {
   }
 };
 
-/**
- * Router action — handles the approve/deny form submission.
- */
 export const editAction = async ({ request, params }) => {
   const formData = await request.formData();
   const status = formData.get('status');
@@ -31,15 +21,11 @@ export const editAction = async ({ request, params }) => {
 
   try {
     if (status === 'Approved') {
-      // Create the approved vacation entry
       await axiosPrivate.post('/vacation', { user, startDate, endDate });
-      // Delete the pending request
       await axiosPrivate.delete(`/pending/${params.id}`);
     } else if (status === 'Denied') {
-      // Just delete the pending request
       await axiosPrivate.delete(`/pending/${params.id}`);
     }
-
     return { success: true };
   } catch (err) {
     if (!err?.response) return { error: 'No server response.' };
@@ -52,72 +38,58 @@ const Edit = () => {
   const actionData = useActionData();
   const navigate = useNavigate();
 
-  // Redirect to pendings on successful action
   useEffect(() => {
-    if (actionData?.success) {
-      navigate('/pendings');
-    }
+    if (actionData?.success) navigate('/pendings');
   }, [actionData, navigate]);
 
-  // Fallback UI if the item wasn't found (replaces the old crash)
   if (!vacationItem) {
     return (
-      <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <h2>No vacation data found.</h2>
+      <section style={{ textAlign: 'center', alignItems: 'center' }}>
+        <h1>Not Found</h1>
         <p>The request may have been deleted or the ID is invalid.</p>
-        <Link to="/pendings">Go back to Pendings</Link>
-      </div>
+        <Link to="/pendings">
+          <button type="button">&larr; Back to Pendings</button>
+        </Link>
+      </section>
     );
   }
 
   return (
     <Form className="editForm" method="post">
       {actionData?.error && (
-        <p className="errmsg" aria-live="assertive">
-          {actionData.error}
-        </p>
+        <p className="errmsg" aria-live="assertive">{actionData.error}</p>
       )}
-      <h1>Edit the request for a vacation.</h1>
+      <h1>Review Vacation Request</h1>
 
-      <label htmlFor="username">
-        Username:&nbsp;
-        <input type="text" name="user" value={vacationItem.username} readOnly />
-      </label>
+      <label htmlFor="username">Employee</label>
+      <input type="text" name="user" value={vacationItem.username} readOnly />
 
-      <label htmlFor="startDate">
-        Start Date:&nbsp;
-        <input
-          type="date"
-          id="startDate"
-          name="startDate"
-          defaultValue={moment(vacationItem.startDate).format('YYYY-MM-DD')}
-          readOnly
-        />
-      </label>
+      <label htmlFor="startDate">Start Date</label>
+      <input
+        type="date"
+        id="startDate"
+        name="startDate"
+        defaultValue={moment(vacationItem.startDate).format('YYYY-MM-DD')}
+        readOnly
+      />
 
-      <label htmlFor="endDate">
-        End Date:&nbsp;
-        <input
-          type="date"
-          id="endDate"
-          name="endDate"
-          defaultValue={moment(vacationItem.endDate).format('YYYY-MM-DD')}
-          readOnly
-        />
-      </label>
+      <label htmlFor="endDate">End Date</label>
+      <input
+        type="date"
+        id="endDate"
+        name="endDate"
+        defaultValue={moment(vacationItem.endDate).format('YYYY-MM-DD')}
+        readOnly
+      />
 
-      <label htmlFor="status">
-        Status:&nbsp;
-        <select id="status" name="status" defaultValue="Pending">
-          <option value="Pending" disabled>
-            Pending
-          </option>
-          <option value="Denied">Denied</option>
-          <option value="Approved">Approved</option>
-        </select>
-      </label>
+      <label htmlFor="status">Decision</label>
+      <select id="status" name="status" defaultValue="Pending">
+        <option value="Pending" disabled>Pending</option>
+        <option value="Approved">Approve</option>
+        <option value="Denied">Deny</option>
+      </select>
 
-      <button type="submit">Submit</button>
+      <button type="submit">Submit Decision</button>
     </Form>
   );
 };

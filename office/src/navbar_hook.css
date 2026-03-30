@@ -1,76 +1,218 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NAVBAR — Modern glass-effect navigation bar
+   ═══════════════════════════════════════════════════════════════════ */
+
 .header {
-    position: fixed;
-    width: 100%;
-    top: 0;
-    left: 0;
-    background-color: gray;
-    z-index: var(--z-fixed);
-  }
-  
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: var(--z-navbar);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid var(--color-neutral-200);
+  transition: box-shadow var(--transition-base);
+}
+
+.header:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--navbar-height);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* ── Logo ──────────────────────────────────────────────────────────── */
+.nav__logo {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600) !important;
+  text-decoration: none !important;
+  letter-spacing: var(--letter-spacing-tight);
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.nav__logo::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-500);
+  flex-shrink: 0;
+}
+
+.nav__logo:hover {
+  color: var(--color-primary-700) !important;
+}
+
+/* ── Desktop nav links ─────────────────────────────────────────────── */
+.nav__list__web {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-600) !important;
+  text-decoration: none !important;
+  border-radius: var(--radius-md);
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.nav__link:hover {
+  color: var(--color-neutral-900) !important;
+  background-color: var(--color-neutral-100);
+  text-decoration: none !important;
+}
+
+.nav__link.active {
+  color: var(--color-primary-700) !important;
+  background-color: var(--color-primary-50);
+}
+
+/* ── CTA button in nav ─────────────────────────────────────────────── */
+.nav__cta {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-700)) !important;
+  color: var(--color-neutral-0) !important;
+  border: none;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-2) var(--space-5) !important;
+  font-weight: var(--font-weight-semi);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav__cta:hover {
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-primary-800)) !important;
+  color: var(--color-neutral-0) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Mobile toggle button ──────────────────────────────────────────── */
+.nav__toggle,
+.nav__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  color: var(--color-neutral-700);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.nav__toggle:hover,
+.nav__close:hover {
+  background-color: var(--color-neutral-100);
+}
+
+/* ── Mobile menu ───────────────────────────────────────────────────── */
+.nav__menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: min(320px, 85vw);
+  height: 100vh;
+  background: var(--color-neutral-0);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-20) var(--space-8) var(--space-8);
+  transition: right var(--transition-slow);
+  z-index: calc(var(--z-navbar) + 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.nav__menu.show-menu {
+  right: 0;
+}
+
+/* Overlay behind mobile menu */
+.nav__menu::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+  z-index: -1;
+}
+
+.nav__menu.show-menu::before {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav__close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+}
+
+.nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav__list .nav__link {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.nav__list .nav__cta {
+  margin-top: var(--space-4);
+  text-align: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4) !important;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 1150px) {
   .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    height: var(--header-height);
-    margin: 1rem;
+    padding: 0 var(--space-4);
   }
-  
-  .nav__logo {
-    color: var(--first-color);
-    transition: color 0.4s;
-    font-size: var(--h2-font-size);
-    font-family: var(--second-font);
-  }
-  
+}
+
+@media (min-width: 1151px) {
   .nav__toggle,
   .nav__close {
-    font-size: 1.5rem;
-    color: var(--title-color);
-    cursor: pointer;
+    display: none;
   }
-  
-  .nav__cta {
-    background-color: var(--first-color);
-    color: var(--title-color);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    padding: 0.75rem 1.5rem;
-  }
-  
-  .nav__list {
-    display: flex;
-    flex-direction: column;
-    row-gap: 2.5rem;
-  }
-  
-  .nav__link {
-    color: var(--title-color);
-    font-weight: var(--font-semi-bold);
-    transition: color 0.4s;
-  }
-  
-  .nav__link:hover {
-    color: var(--first-color);
-  }
-  
-  .nav__close {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-  }
-  
-  .show-menu {
-    right: 0;
-  }
-  
-  .nav__list__web {
-    display: flex;
-    flex-direction: row;
-    column-gap: 2.5rem;
-    align-items: center;
-    list-style-type: none;
-    padding: 0;
-  }
+}
